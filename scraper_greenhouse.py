@@ -1,12 +1,10 @@
 import requests
 import pandas as pd
 import time
-from itertools import product
-import string
 
 all_jobs = []
 
-# GREENHOUSE - Expanded list (150+ companies)
+# GREENHOUSE - 150+ companies
 greenhouse = [
     # Tier 1 Tech
     "stripe", "figma", "notion", "canva", "airbnb", "shopify", "databricks", 
@@ -52,37 +50,26 @@ greenhouse = [
     
     # AI/ML
     "huggingface", "replicate", "modal", "baseten", "banana",
-    "poolside", "magic", "bittensor", "getgo",
+    "together", "poolside", "magic", "bittensor",
     
     # Entertainment
-    "spotify", "netflix", "hulu", "discord", "twitch", "getgo",
+    "spotify", "netflix", "hulu", "discord", "twitch",
     
     # Social
-    "snap", "pinterest", "nextdoor", "getgo",
+    "snap", "pinterest", "nextdoor", "nextdoor",
     
-    # Enterprise SaaS
+    # More SaaS
     "calendly", "zendesk", "intercom", "hubspot", "salesforce",
-    "slack", "zoom", "asana", "monday", "jira", "confluence",
-    "trello", "getgo",
+    "slack", "zoom", "asana", "monday", "jira",
+    "confluence", "trello", "notion", "notion",
     
-    # Security & Auth
-    "okta", "auth0", "twilio", "sendgrid", "getgo",
-    
-    # Web Builders
-    "wix", "squarespace", "webflow", "framer", "getgo",
-    
-    # Additional Companies
-    "component", "algolia", "segment", "mobileye", "wiz",
-    "snyk", "aqua", "sysdig", "lacework", "getgo",
-    "notion-labs", "supabase-io", "vercel-app",
-    
-    # More startups
-    "rippling-app", "brex-app", "mercury-bank", "suno-ai",
-    "anthropic-ai", "openai-research", "replit-com",
+    # Additional verified companies
+    "okta", "auth0", "twilio", "sendgrid", "stripe",
+    "shopify", "wix", "squarespace", "webflow", "framer",
 ]
 
-# Remove duplicates and empty strings
-greenhouse = [g.strip() for g in list(dict.fromkeys(greenhouse)) if g.strip()]
+# Remove duplicates
+greenhouse = list(dict.fromkeys(greenhouse))
 
 print("="*70)
 print(f"SCRAPING GREENHOUSE JOBS ({len(greenhouse)} companies)")
@@ -90,7 +77,6 @@ print("="*70)
 
 successful = 0
 failed = 0
-total_jobs_before_dedup = 0
 
 for i, slug in enumerate(greenhouse):
     try:
@@ -104,15 +90,12 @@ for i, slug in enumerate(greenhouse):
         jobs = data.get("jobs", [])
         print(f"✓ {len(jobs)}")
         
-        total_jobs_before_dedup += len(jobs)
-        
         for job in jobs:
             all_jobs.append({
                 "company": slug,
                 "ats": "Greenhouse",
                 "title": job.get("title"),
                 "location": job.get("location", {}).get("name"),
-                "department": job.get("department", {}).get("name"),
                 "url": job.get("absolute_url"),
                 "id": job.get("id"),
             })
@@ -120,7 +103,7 @@ for i, slug in enumerate(greenhouse):
         if len(jobs) > 0:
             successful += 1
         
-        time.sleep(0.15)
+        time.sleep(0.2)
     except Exception as e:
         failed += 1
         print(f"✗")
@@ -135,14 +118,11 @@ print("\n" + "="*70)
 print("SUMMARY")
 print("="*70)
 print(f"Companies attempted: {len(greenhouse)}")
-print(f"Companies with active jobs: {successful}")
-print(f"Raw jobs scraped: {total_jobs_before_dedup:,}")
+print(f"Companies with jobs: {successful}")
+print(f"Raw jobs scraped: {len(df):,}")
 print(f"After removing duplicates: {len(df_clean):,}")
 print(f"Unique companies with jobs: {df_clean['company'].nunique()}")
-print(f"\nJobs removed as duplicates: {total_jobs_before_dedup - len(df_clean):,}")
 
 # Save
 df_clean.to_csv("all_jobs.csv", index=False)
-file_size_mb = len(df_clean) * 0.001
 print(f"\n✓ Saved {len(df_clean):,} jobs to all_jobs.csv")
-print(f"File size: ~{file_size_mb:.1f} MB")
