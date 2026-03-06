@@ -23,29 +23,30 @@
             background: rgba(15, 23, 42, 0.5);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid #334155;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .header-content {
             max-width: 90rem;
             margin: 0 auto;
+            padding: 0 1rem;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
         .header-subtitle {
             color: #94a3b8;
-            font-size: 0.95rem;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
         }
 
         .container {
             max-width: 90rem;
             margin: 0 auto;
-            padding: 2rem;
+            padding: clamp(1rem, 3vw, 2rem);
         }
 
         .search-section {
@@ -54,14 +55,16 @@
 
         .search-wrapper {
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
         .search-wrapper::before {
             content: '🔍';
             position: absolute;
             left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
+            font-size: 1.2rem;
+            z-index: 1;
         }
 
         .search-input {
@@ -86,14 +89,27 @@
 
         .content-grid {
             display: grid;
-            grid-template-columns: 280px 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 280px 1fr;
+            }
         }
 
         .sidebar {
             position: sticky;
             top: 2rem;
             height: fit-content;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
         }
 
         .filter-header {
@@ -116,6 +132,7 @@
             border-radius: 0.25rem;
             font-size: 0.75rem;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .clear-btn:hover {
@@ -126,13 +143,35 @@
             margin-bottom: 2rem;
         }
 
+        .filter-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
         .filter-group h3 {
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #cbd5e1;
-            margin-bottom: 0.5rem;
+            margin: 0;
+        }
+
+        .all-btn {
+            padding: 0.2rem 0.4rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .all-btn:hover {
+            background: #2563eb;
         }
 
         .filter-search-input {
@@ -156,8 +195,18 @@
             overflow-y: auto;
         }
 
+        @media (max-width: 768px) {
+            .filter-list {
+                max-height: 300px;
+            }
+        }
+
         .filter-list::-webkit-scrollbar {
             width: 6px;
+        }
+
+        .filter-list::-webkit-scrollbar-track {
+            background: #0f172a;
         }
 
         .filter-list::-webkit-scrollbar-thumb {
@@ -184,6 +233,7 @@
             font-size: 0.875rem;
             color: #94a3b8;
             cursor: pointer;
+            flex: 1;
         }
 
         .filter-item:hover label {
@@ -198,28 +248,40 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         .stat-card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 0.5rem;
-            padding: 1.5rem;
+            padding: clamp(1rem, 2vw, 1.5rem);
             text-align: center;
         }
 
         .stat-label {
             color: #94a3b8;
-            font-size: 0.875rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
             font-weight: 500;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             font-weight: 700;
             color: #60a5fa;
         }
@@ -228,12 +290,13 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 0.5rem;
-            overflow: hidden;
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 600px;
         }
 
         thead {
@@ -242,61 +305,75 @@
         }
 
         th {
-            padding: 1rem;
+            padding: clamp(0.75rem, 2vw, 1rem);
             text-align: left;
-            font-size: 0.75rem;
+            font-size: clamp(0.65rem, 1.5vw, 0.75rem);
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: #cbd5e1;
         }
 
         td {
-            padding: 1rem;
+            padding: clamp(0.75rem, 2vw, 1rem);
             border-bottom: 1px solid #334155;
+            font-size: clamp(0.85rem, 1.5vw, 0.9375rem);
         }
 
         tbody tr:hover {
             background: rgba(71, 85, 105, 0.2);
         }
 
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
         .company-cell {
             font-weight: 600;
+            color: #e2e8f0;
         }
 
         .link-btn {
-            padding: 0.5rem 1rem;
+            display: inline-block;
+            padding: clamp(0.4rem, 1vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
             background: #3b82f6;
             color: white;
-            border: none;
+            text-decoration: none;
             border-radius: 0.375rem;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+            transition: all 0.2s;
+            border: none;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .link-btn:hover {
             background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .link-btn:active {
+            transform: translateY(0);
         }
 
         .empty-state {
-            padding: 3rem;
+            padding: clamp(1.5rem, 5vw, 3rem);
             text-align: center;
             color: #94a3b8;
+            font-size: clamp(0.9rem, 2vw, 1rem);
         }
 
         .loading {
-            padding: 2rem;
+            padding: clamp(1rem, 3vw, 2rem);
             text-align: center;
             color: #94a3b8;
         }
 
-        @media (max-width: 1024px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
             }
         }
     </style>
@@ -316,7 +393,7 @@
                     type="text"
                     id="mainSearch"
                     class="search-input"
-                    placeholder="Search job titles or companies..."
+                    placeholder="Search job titles..."
                 >
             </div>
         </div>
@@ -329,27 +406,27 @@
                 </div>
 
                 <div class="filter-group">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <h3 style="margin: 0;">Company</h3>
-                        <button class="clear-btn" onclick="selectAllCompanies()" style="font-size: 0.7rem;">All</button>
+                    <div class="filter-group-header">
+                        <h3>Company</h3>
+                        <button class="all-btn" onclick="selectAllCompanies()">All</button>
                     </div>
                     <input type="text" class="filter-search-input" id="companySearch" placeholder="Search..." onkeyup="filterCompanies()">
                     <div class="filter-list" id="companyList"></div>
                 </div>
 
                 <div class="filter-group">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <h3 style="margin: 0;">Location</h3>
-                        <button class="clear-btn" onclick="selectAllLocations()" style="font-size: 0.7rem;">All</button>
+                    <div class="filter-group-header">
+                        <h3>Location</h3>
+                        <button class="all-btn" onclick="selectAllLocations()">All</button>
                     </div>
                     <input type="text" class="filter-search-input" id="locationSearch" placeholder="Search..." onkeyup="filterLocations()">
                     <div class="filter-list" id="locationList"></div>
                 </div>
 
                 <div class="filter-group">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <h3 style="margin: 0;">Job Title</h3>
-                        <button class="clear-btn" onclick="selectAllTitles()" style="font-size: 0.7rem;">All</button>
+                    <div class="filter-group-header">
+                        <h3>Job Title</h3>
+                        <button class="all-btn" onclick="selectAllTitles()">All</button>
                     </div>
                     <input type="text" class="filter-search-input" id="titleSearch" placeholder="Search..." onkeyup="filterTitles()">
                     <div class="filter-list" id="titleList"></div>
@@ -358,10 +435,6 @@
 
             <div class="results-section">
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Results</div>
-                        <div class="stat-value" id="resultCount">0</div>
-                    </div>
                     <div class="stat-card" style="cursor: pointer;" onclick="sortByCompany()">
                         <div class="stat-label">Companies ↕️</div>
                         <div class="stat-value" id="companyCount">0</div>
@@ -370,13 +443,17 @@
                         <div class="stat-label">Locations ↕️</div>
                         <div class="stat-value" id="locationCount">0</div>
                     </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="sortByTitle()">
+                        <div class="stat-label">Job Titles ↕️</div>
+                        <div class="stat-value" id="titleCount">0</div>
+                    </div>
                     <div class="stat-card">
-                        <div class="stat-label">Total Jobs</div>
-                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">Results</div>
+                        <div class="stat-value" id="resultCount">0</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last Scraped</div>
-                        <div class="stat-value" id="lastScraped" style="font-size: 0.85rem; color: #94a3b8;">Loading...</div>
+                        <div class="stat-value" id="lastScraped" style="font-size: 0.9rem; color: #94a3b8;">Loading...</div>
                     </div>
                 </div>
 
@@ -402,6 +479,11 @@
 
     <script>
         let allJobs = [];
+        let sortState = {
+            company: 'asc',
+            location: 'asc',
+            title: 'asc'
+        };
 
         async function loadData() {
             try {
@@ -421,7 +503,6 @@
                         }
                         
                         document.getElementById('loadingState').style.display = 'none';
-                        document.getElementById('totalCount').textContent = allJobs.length.toLocaleString();
                         
                         buildFilters();
                         renderJobs();
@@ -429,6 +510,18 @@
                 });
             } catch (error) {
                 document.getElementById('loadingState').textContent = '❌ Could not load all_jobs_combined.csv';
+            }
+        }
+
+        async function loadLastScraped() {
+            try {
+                const response = await fetch('scrape_time.txt');
+                if (response.ok) {
+                    const text = await response.text();
+                    document.getElementById('lastScraped').textContent = text.trim();
+                }
+            } catch (e) {
+                document.getElementById('lastScraped').textContent = 'Check back soon';
             }
         }
 
@@ -483,65 +576,7 @@
             });
         }
 
-        function clearAllFilters() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.getElementById('mainSearch').value = '';
-            document.getElementById('companySearch').value = '';
-            document.getElementById('locationSearch').value = '';
-            document.getElementById('titleSearch').value = '';
-            renderJobs();
-        }
-
-        function renderJobs() {
-            const search = document.getElementById('mainSearch').value.toLowerCase();
-            
-            const checkedCompanies = new Set([...document.querySelectorAll('#companyList input:checked')].map(cb => cb.getAttribute('data-value')));
-            const checkedLocations = new Set([...document.querySelectorAll('#locationList input:checked')].map(cb => cb.getAttribute('data-value')));
-            const checkedTitles = new Set([...document.querySelectorAll('#titleList input:checked')].map(cb => cb.getAttribute('data-value')));
-
-            const filtered = allJobs.filter(job => {
-                const matchCompany = checkedCompanies.size === 0 || checkedCompanies.has(job.company);
-                const matchLocation = checkedLocations.size === 0 || checkedLocations.has(job.location);
-                const matchTitle = checkedTitles.size === 0 || checkedTitles.has(job.title);
-                const matchSearch = !search || job.title.toLowerCase().includes(search);
-                
-                return matchCompany && matchLocation && matchTitle && matchSearch;
-            });
-            document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
-            document.getElementById('companyCount').textContent = new Set(filtered.map(j => j.company)).size;
-            document.getElementById('locationCount').textContent = new Set(filtered.map(j => j.location)).size;
-
-            const jobsBody = document.getElementById('jobsBody');
-            const jobsTable = document.getElementById('jobsTable');
-            const emptyState = document.getElementById('emptyState');
-
-            if (filtered.length === 0) {
-                jobsTable.style.display = 'none';
-                emptyState.style.display = 'block';
-            } else {
-                jobsBody.innerHTML = filtered.map((job, idx) => {
-                    const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
-                    const isApplied = appliedJobs.includes(job.id);
-                    const checkboxId = `applied-${idx}`;
-                    
-                    return `
-                    <tr style="opacity: ${isApplied ? '0.6' : '1'};">
-                        <td class="company-cell">${job.company}</td>
-                        <td>${job.title}</td>
-                        <td>${job.location || '—'}</td>
-                        <td><input type="checkbox" id="${checkboxId}" ${isApplied ? 'checked' : ''} onchange="toggleApplied('${job.id}', this.checked)"></td>
-                        <td><button class="link-btn" onclick="applyAndMark('${job.url}', '${job.id}')">Apply</button></td>
-                    </tr>
-                `;
-                }).join('');
-                jobsTable.style.display = 'table';
-                emptyState.style.display = 'none';
-            }
-        }
-
-        document.getElementById('mainSearch').addEventListener('input', renderJobs);
         function selectAllCompanies() {
-            const search = document.getElementById('companySearch').value.toLowerCase();
             document.querySelectorAll('#companyList .filter-item').forEach(item => {
                 if (item.style.display !== 'none') {
                     item.querySelector('input[type="checkbox"]').checked = true;
@@ -551,7 +586,6 @@
         }
 
         function selectAllLocations() {
-            const search = document.getElementById('locationSearch').value.toLowerCase();
             document.querySelectorAll('#locationList .filter-item').forEach(item => {
                 if (item.style.display !== 'none') {
                     item.querySelector('input[type="checkbox"]').checked = true;
@@ -561,7 +595,6 @@
         }
 
         function selectAllTitles() {
-            const search = document.getElementById('titleSearch').value.toLowerCase();
             document.querySelectorAll('#titleList .filter-item').forEach(item => {
                 if (item.style.display !== 'none') {
                     item.querySelector('input[type="checkbox"]').checked = true;
@@ -570,30 +603,14 @@
             renderJobs();
         }
 
-        function applyAndMark(jobUrl, jobId) {
-            toggleApplied(jobId, true);
-            window.open(jobUrl, '_blank');
-        }
-        function toggleApplied(jobId, isApplied) {
-            let appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
-            
-            if (isApplied) {
-                if (!appliedJobs.includes(jobId)) {
-                    appliedJobs.push(jobId);
-                }
-            } else {
-                appliedJobs = appliedJobs.filter(id => id !== jobId);
-            }
-            
-            localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
+        function clearAllFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('mainSearch').value = '';
+            document.getElementById('companySearch').value = '';
+            document.getElementById('locationSearch').value = '';
+            document.getElementById('titleSearch').value = '';
             renderJobs();
         }
-        
-        let sortState = {
-            company: 'asc',
-            location: 'asc',
-            title: 'asc'
-        };
 
         function sortByCompany() {
             const jobsBody = document.getElementById('jobsBody');
@@ -651,17 +668,77 @@
             rows.forEach(row => jobsBody.appendChild(row));
             sortState.title = sortState.title === 'asc' ? 'desc' : 'asc';
         }
-        async function loadLastScraped() {
-            try {
-                const response = await fetch('scrape_time.txt');
-                if (response.ok) {
-                    const text = await response.text();
-                    document.getElementById('lastScraped').textContent = text.trim();
+
+        function applyAndMark(jobUrl, jobId) {
+            toggleApplied(jobId, true);
+            window.open(jobUrl, '_blank');
+        }
+
+        function toggleApplied(jobId, isApplied) {
+            let appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
+            
+            if (isApplied) {
+                if (!appliedJobs.includes(jobId)) {
+                    appliedJobs.push(jobId);
                 }
-            } catch (e) {
-                document.getElementById('lastScraped').textContent = 'Check back soon';
+            } else {
+                appliedJobs = appliedJobs.filter(id => id !== jobId);
+            }
+            
+            localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
+            renderJobs();
+        }
+
+        function renderJobs() {
+            const search = document.getElementById('mainSearch').value.toLowerCase();
+            
+            const checkedCompanies = new Set([...document.querySelectorAll('#companyList input:checked')].map(cb => cb.getAttribute('data-value')));
+            const checkedLocations = new Set([...document.querySelectorAll('#locationList input:checked')].map(cb => cb.getAttribute('data-value')));
+            const checkedTitles = new Set([...document.querySelectorAll('#titleList input:checked')].map(cb => cb.getAttribute('data-value')));
+
+            const filtered = allJobs.filter(job => {
+                const matchCompany = checkedCompanies.size === 0 || checkedCompanies.has(job.company);
+                const matchLocation = checkedLocations.size === 0 || checkedLocations.has(job.location);
+                const matchTitle = checkedTitles.size === 0 || checkedTitles.has(job.title);
+                const matchSearch = !search || job.title.toLowerCase().includes(search);
+                
+                return matchCompany && matchLocation && matchTitle && matchSearch;
+            });
+
+            document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
+            document.getElementById('companyCount').textContent = new Set(filtered.map(j => j.company)).size;
+            document.getElementById('locationCount').textContent = new Set(filtered.map(j => j.location)).size;
+            document.getElementById('titleCount').textContent = new Set(filtered.map(j => j.title)).size;
+
+            const jobsBody = document.getElementById('jobsBody');
+            const jobsTable = document.getElementById('jobsTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filtered.length === 0) {
+                jobsTable.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                jobsBody.innerHTML = filtered.map((job, idx) => {
+                    const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
+                    const isApplied = appliedJobs.includes(job.id);
+                    const checkboxId = `applied-${idx}`;
+                    
+                    return `
+                    <tr style="opacity: ${isApplied ? '0.6' : '1'};">
+                        <td class="company-cell">${job.company}</td>
+                        <td>${job.title}</td>
+                        <td>${job.location || '—'}</td>
+                        <td><input type="checkbox" id="${checkboxId}" ${isApplied ? 'checked' : ''} onchange="toggleApplied('${job.id}', this.checked)"></td>
+                        <td><button class="link-btn" onclick="applyAndMark('${job.url}', '${job.id}')">Apply</button></td>
+                    </tr>
+                `;
+                }).join('');
+                jobsTable.style.display = 'table';
+                emptyState.style.display = 'none';
             }
         }
+
+        document.getElementById('mainSearch').addEventListener('input', renderJobs);
         loadData();
         loadLastScraped();
     </script>

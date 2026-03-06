@@ -387,17 +387,6 @@
     </div>
 
     <div class="container">
-        <div class="search-section">
-            <div class="search-wrapper">
-                <input
-                    type="text"
-                    id="mainSearch"
-                    class="search-input"
-                    placeholder="Search job titles..."
-                >
-            </div>
-        </div>
-
         <div class="content-grid">
             <div class="sidebar">
                 <div class="filter-header">
@@ -407,29 +396,16 @@
 
                 <div class="filter-group">
                     <div class="filter-group-header">
-                        <h3>Company</h3>
-                        <button class="all-btn" onclick="selectAllCompanies()">All</button>
+                        <h3>Job Title</h3>
                     </div>
-                    <input type="text" class="filter-search-input" id="companySearch" placeholder="Search..." onkeyup="filterCompanies()">
-                    <div class="filter-list" id="companyList"></div>
+                    <input type="text" class="filter-search-input" id="titleSearch" placeholder="Search job titles..." onkeyup="renderJobs()">
                 </div>
 
                 <div class="filter-group">
                     <div class="filter-group-header">
                         <h3>Location</h3>
-                        <button class="all-btn" onclick="selectAllLocations()">All</button>
                     </div>
-                    <input type="text" class="filter-search-input" id="locationSearch" placeholder="Search..." onkeyup="filterLocations()">
-                    <div class="filter-list" id="locationList"></div>
-                </div>
-
-                <div class="filter-group">
-                    <div class="filter-group-header">
-                        <h3>Job Title</h3>
-                        <button class="all-btn" onclick="selectAllTitles()">All</button>
-                    </div>
-                    <input type="text" class="filter-search-input" id="titleSearch" placeholder="Search..." onkeyup="filterTitles()">
-                    <div class="filter-list" id="titleList"></div>
+                    <input type="text" class="filter-search-input" id="locationSearch" placeholder="Search locations..." onkeyup="renderJobs()">
                 </div>
             </div>
 
@@ -526,89 +502,36 @@
         }
 
         function buildFilters() {
-            const companies = [...new Set(allJobs.map(j => j.company))].sort();
-            const locations = [...new Set(allJobs.filter(j => j.location).map(j => j.location))].sort();
-            const titles = [...new Set(allJobs.map(j => j.title))].sort();
-
-            document.getElementById('companyList').innerHTML = companies.map((c, i) => `
-                <div class="filter-item">
-                    <input type="checkbox" id="c${i}" data-value="${c}" onchange="renderJobs()">
-                    <label for="c${i}">${c}</label>
-                </div>
-            `).join('');
-
-            document.getElementById('locationList').innerHTML = locations.map((l, i) => `
-                <div class="filter-item">
-                    <input type="checkbox" id="l${i}" data-value="${l}" onchange="renderJobs()">
-                    <label for="l${i}">${l}</label>
-                </div>
-            `).join('');
-
-            document.getElementById('titleList').innerHTML = titles.slice(0, 50).map((t, i) => `
-                <div class="filter-item">
-                    <input type="checkbox" id="t${i}" data-value="${t}" onchange="renderJobs()">
-                    <label for="t${i}">${t}</label>
-                </div>
-            `).join('');
+            // No longer needed - we're using search inputs instead
         }
 
         function filterCompanies() {
-            const search = document.getElementById('companySearch').value.toLowerCase();
-            document.querySelectorAll('#companyList .filter-item').forEach(item => {
-                const text = item.querySelector('label').textContent.toLowerCase();
-                item.style.display = text.includes(search) ? 'flex' : 'none';
-            });
+            // Removed - no longer needed
         }
 
         function filterLocations() {
-            const search = document.getElementById('locationSearch').value.toLowerCase();
-            document.querySelectorAll('#locationList .filter-item').forEach(item => {
-                const text = item.querySelector('label').textContent.toLowerCase();
-                item.style.display = text.includes(search) ? 'flex' : 'none';
-            });
+            // Removed - search is real-time in renderJobs
         }
 
         function filterTitles() {
-            const search = document.getElementById('titleSearch').value.toLowerCase();
-            document.querySelectorAll('#titleList .filter-item').forEach(item => {
-                const text = item.querySelector('label').textContent.toLowerCase();
-                item.style.display = text.includes(search) ? 'flex' : 'none';
-            });
+            // Removed - search is real-time in renderJobs
         }
 
         function selectAllCompanies() {
-            document.querySelectorAll('#companyList .filter-item').forEach(item => {
-                if (item.style.display !== 'none') {
-                    item.querySelector('input[type="checkbox"]').checked = true;
-                }
-            });
-            renderJobs();
+            // Removed - no longer needed
         }
 
         function selectAllLocations() {
-            document.querySelectorAll('#locationList .filter-item').forEach(item => {
-                if (item.style.display !== 'none') {
-                    item.querySelector('input[type="checkbox"]').checked = true;
-                }
-            });
-            renderJobs();
+            // Removed - no longer needed
         }
 
         function selectAllTitles() {
-            document.querySelectorAll('#titleList .filter-item').forEach(item => {
-                if (item.style.display !== 'none') {
-                    item.querySelector('input[type="checkbox"]').checked = true;
-                }
-            });
-            renderJobs();
+            // Removed - no longer needed
         }
 
         function clearAllFilters() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.getElementById('mainSearch').value = '';
-            document.getElementById('companySearch').value = '';
-            document.getElementById('locationSearch').value = '';
             document.getElementById('titleSearch').value = '';
+            document.getElementById('locationSearch').value = '';
             renderJobs();
         }
 
@@ -690,19 +613,14 @@
         }
 
         function renderJobs() {
-            const search = document.getElementById('mainSearch').value.toLowerCase();
-            
-            const checkedCompanies = new Set([...document.querySelectorAll('#companyList input:checked')].map(cb => cb.getAttribute('data-value')));
-            const checkedLocations = new Set([...document.querySelectorAll('#locationList input:checked')].map(cb => cb.getAttribute('data-value')));
-            const checkedTitles = new Set([...document.querySelectorAll('#titleList input:checked')].map(cb => cb.getAttribute('data-value')));
+            const titleSearch = document.getElementById('titleSearch').value.toLowerCase();
+            const locationSearch = document.getElementById('locationSearch').value.toLowerCase();
 
             const filtered = allJobs.filter(job => {
-                const matchCompany = checkedCompanies.size === 0 || checkedCompanies.has(job.company);
-                const matchLocation = checkedLocations.size === 0 || checkedLocations.has(job.location);
-                const matchTitle = checkedTitles.size === 0 || checkedTitles.has(job.title);
-                const matchSearch = !search || job.title.toLowerCase().includes(search);
+                const matchTitle = !titleSearch || job.title.toLowerCase().includes(titleSearch);
+                const matchLocation = !locationSearch || (job.location && job.location.toLowerCase().includes(locationSearch));
                 
-                return matchCompany && matchLocation && matchTitle && matchSearch;
+                return matchTitle && matchLocation;
             });
 
             document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
@@ -738,7 +656,8 @@
             }
         }
 
-        document.getElementById('mainSearch').addEventListener('input', renderJobs);
+        document.getElementById('titleSearch').addEventListener('input', renderJobs);
+        document.getElementById('locationSearch').addEventListener('input', renderJobs);
         loadData();
         loadLastScraped();
     </script>
