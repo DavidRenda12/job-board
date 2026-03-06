@@ -515,14 +515,21 @@
                 jobsTable.style.display = 'none';
                 emptyState.style.display = 'block';
             } else {
-                jobsBody.innerHTML = filtered.map(job => `
-                    <tr>
+                jobsBody.innerHTML = filtered.map((job, idx) => {
+                    const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
+                    const isApplied = appliedJobs.includes(job.id);
+                    const checkboxId = `applied-${idx}`;
+                    
+                    return `
+                    <tr style="opacity: ${isApplied ? '0.6' : '1'};">
                         <td class="company-cell">${job.company}</td>
                         <td>${job.title}</td>
                         <td>${job.location || '—'}</td>
-                        <td><button class="link-btn" onclick="window.open('${job.url}', '_blank')">Apply</button></td>
+                        <td><input type="checkbox" id="${checkboxId}" ${isApplied ? 'checked' : ''} onchange="toggleApplied('${job.id}', this.checked)"></td>
+                        <td><button class="link-btn" onclick="applyAndMark('${job.url}', '${job.id}')">Apply</button></td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
                 jobsTable.style.display = 'table';
                 emptyState.style.display = 'none';
             }
