@@ -557,6 +557,26 @@
             });
             renderJobs();
         }
+
+        function applyAndMark(jobUrl, jobId) {
+            toggleApplied(jobId, true);
+            window.open(jobUrl, '_blank');
+        }
+        function toggleApplied(jobId, isApplied) {
+            let appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
+            
+            if (isApplied) {
+                if (!appliedJobs.includes(jobId)) {
+                    appliedJobs.push(jobId);
+                }
+            } else {
+                appliedJobs = appliedJobs.filter(id => id !== jobId);
+            }
+            
+            localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
+            renderJobs();
+        }
+        
         let sortState = {
             company: 'asc',
             location: 'asc',
