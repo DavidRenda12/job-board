@@ -290,13 +290,34 @@
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 0.5rem;
-            overflow-x: auto;
+            overflow-x: visible;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.7rem;
+            }
+
+            th, td {
+                padding: 0.4rem !important;
+            }
+
+            .link-btn {
+                padding: 0.25rem 0.4rem !important;
+                font-size: 0.6rem !important;
+            }
+
+            .company-cell {
+                max-width: 80px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
         }
 
         thead {
@@ -331,6 +352,13 @@
         .company-cell {
             font-weight: 600;
             color: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .company-cell, 
+            .company-header {
+                display: none;
+            }
         }
 
         .link-btn {
@@ -438,7 +466,7 @@
                     <table id="jobsTable" style="display: none;">
                         <thead>
                             <tr>
-                                <th>Company</th>
+                                <th class="company-header">Company</th>
                                 <th>Job Title</th>
                                 <th>Location</th>
                                 <th>Applied</th>
