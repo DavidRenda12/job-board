@@ -374,6 +374,10 @@
                         <div class="stat-label">Total Jobs</div>
                         <div class="stat-value" id="totalCount">0</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last Scraped</div>
+                        <div class="stat-value" id="lastScraped" style="font-size: 0.85rem; color: #94a3b8;">Loading...</div>
+                    </div>
                 </div>
 
                 <div class="table-container">
@@ -647,7 +651,21 @@
             rows.forEach(row => jobsBody.appendChild(row));
             sortState.title = sortState.title === 'asc' ? 'desc' : 'asc';
         }
+        function loadLastScraped() {
+            try {
+                const response = await fetch('all_jobs.csv');
+                if (response.ok) {
+                    // Get the file's last modified time
+                    const lastModified = new Date(response.headers.get('last-modified'));
+                    const formatted = lastModified.toLocaleString();
+                    document.getElementById('lastScraped').textContent = formatted;
+                }
+            } catch (e) {
+                document.getElementById('lastScraped').textContent = 'Unknown';
+            }
+        }
         loadData();
+        loadLastScraped();
     </script>
 </body>
 </html>
