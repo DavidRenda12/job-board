@@ -498,11 +498,10 @@
                 const matchCompany = checkedCompanies.size === 0 || checkedCompanies.has(job.company);
                 const matchLocation = checkedLocations.size === 0 || checkedLocations.has(job.location);
                 const matchTitle = checkedTitles.size === 0 || checkedTitles.has(job.title);
-                const matchSearch = !search || job.title.toLowerCase().includes(search) || job.company.toLowerCase().includes(search);
+                const matchSearch = !search || job.title.toLowerCase().includes(search);
                 
                 return matchCompany && matchLocation && matchTitle && matchSearch;
             });
-
             document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
             document.getElementById('companyCount').textContent = new Set(filtered.map(j => j.company)).size;
             document.getElementById('locationCount').textContent = new Set(filtered.map(j => j.location)).size;
