@@ -13,13 +13,12 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #e2e8f0;
             min-height: 100vh;
         }
 
-        /* Header */
         .header {
             background: rgba(15, 23, 42, 0.5);
             backdrop-filter: blur(10px);
@@ -36,9 +35,6 @@
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
         }
 
         .header-subtitle {
@@ -46,37 +42,14 @@
             font-size: 0.95rem;
         }
 
-        /* Main Container */
         .container {
             max-width: 90rem;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        /* Search Bar */
         .search-section {
             margin-bottom: 2rem;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            background: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 0.5rem;
-            color: #e2e8f0;
-            font-size: 1rem;
-            position: relative;
-        }
-
-        .search-input::placeholder {
-            color: #64748b;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .search-wrapper {
@@ -92,14 +65,32 @@
             font-size: 1.2rem;
         }
 
-        /* Grid Layout */
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
         .content-grid {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 280px 1fr;
             gap: 2rem;
         }
 
-        /* Sidebar */
         .sidebar {
             position: sticky;
             top: 2rem;
@@ -116,9 +107,6 @@
         .filter-header h2 {
             font-size: 1.125rem;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .clear-btn {
@@ -137,7 +125,7 @@
         }
 
         .filter-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .filter-group h3 {
@@ -146,32 +134,31 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #cbd5e1;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
-        .filter-search {
+        .filter-search-input {
             width: 100%;
             padding: 0.5rem;
             background: #0f172a;
             border: 1px solid #475569;
             border-radius: 0.375rem;
             color: #e2e8f0;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             margin-bottom: 0.75rem;
         }
 
-        .filter-search::placeholder {
+        .filter-search-input::placeholder {
             color: #64748b;
         }
 
-        .filter-search:focus {
+        .filter-search-input:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
 
         .filter-list {
-            max-height: 350px;
+            max-height: 400px;
             overflow-y: auto;
             padding-right: 0.5rem;
         }
@@ -220,14 +207,12 @@
             color: #cbd5e1;
         }
 
-        /* Results Section */
         .results-section {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -263,7 +248,6 @@
             color: #4ade80;
         }
 
-        /* Table */
         .table-container {
             background: #1e293b;
             border: 1px solid #334155;
@@ -338,10 +322,6 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
-        .link-btn:active {
-            transform: translateY(0);
-        }
-
         .empty-state {
             padding: 3rem;
             text-align: center;
@@ -354,7 +334,6 @@
             color: #94a3b8;
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .content-grid {
                 grid-template-columns: 1fr;
@@ -369,76 +348,73 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            th, td {
-                padding: 0.75rem;
-                font-size: 0.875rem;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="header-content">
             <h1>💼 Job Market Dashboard</h1>
-            <p class="header-subtitle">Search across thousands of jobs from top companies</p>
+            <p class="header-subtitle">Access jobs directly from company ATS sites</p>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="container">
-        <!-- Search -->
         <div class="search-section">
             <div class="search-wrapper">
                 <input
                     type="text"
-                    id="searchInput"
+                    id="mainSearch"
                     class="search-input"
                     placeholder="Search job titles or companies..."
                 >
             </div>
         </div>
 
-        <!-- Grid Layout -->
         <div class="content-grid">
-            <!-- Sidebar Filters -->
             <div class="sidebar">
                 <div class="filter-header">
                     <h2>🎯 Filters</h2>
-                    <button class="clear-btn" onclick="clearFilters()">Clear</button>
+                    <button class="clear-btn" onclick="clearAllFilters()">Clear</button>
                 </div>
 
-                <!-- Company Filter -->
                 <div class="filter-group">
                     <h3>Company</h3>
-                    <input type="text" class="filter-search" id="companySearch" placeholder="Search companies...">
+                    <input 
+                        type="text" 
+                        class="filter-search-input" 
+                        id="companySearch"
+                        placeholder="Search companies..."
+                        onkeyup="filterCompanies()"
+                    >
                     <div class="filter-list" id="companyList"></div>
                 </div>
 
-                <!-- Location Filter -->
                 <div class="filter-group">
                     <h3>Location</h3>
-                    <input type="text" class="filter-search" id="locationSearch" placeholder="Search locations...">
+                    <input 
+                        type="text" 
+                        class="filter-search-input" 
+                        id="locationSearch"
+                        placeholder="Search locations..."
+                        onkeyup="filterLocations()"
+                    >
                     <div class="filter-list" id="locationList"></div>
                 </div>
 
-                <!-- Job Title Filter -->
                 <div class="filter-group">
                     <h3>Job Title</h3>
-                    <input type="text" class="filter-search" id="titleSearch" placeholder="Search titles...">
+                    <input 
+                        type="text" 
+                        class="filter-search-input" 
+                        id="titleSearch"
+                        placeholder="Search titles..."
+                        onkeyup="filterTitles()"
+                    >
                     <div class="filter-list" id="titleList"></div>
                 </div>
             </div>
 
-            <!-- Results Section -->
             <div class="results-section">
-                <!-- Stats -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Results</div>
@@ -454,7 +430,6 @@
                     </div>
                 </div>
 
-                <!-- Table -->
                 <div class="table-container">
                     <div id="loadingState" class="loading">Loading your jobs...</div>
                     <table id="jobsTable" style="display: none;">
@@ -478,134 +453,187 @@
 
     <script>
         let allJobs = [];
-        let filters = {
-            companies: new Set(),
-            locations: new Set(),
-            titles: new Set()
-        };
+        let allCompanies = [];
+        let allLocations = [];
+        let allTitles = [];
+        
+        let selectedCompanies = new Set();
+        let selectedLocations = new Set();
+        let selectedTitles = new Set();
 
-        // Load CSV file
         async function loadCSV() {
             try {
                 const response = await fetch('all_jobs.csv');
-                if (!response.ok) {
-                    throw new Error('CSV file not found');
-                }
-                const csv = await response.text();
+                if (!response.ok) throw new Error('CSV not found');
                 
+                const csv = await response.text();
                 Papa.parse(csv, {
                     header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
-                        allJobs = results.data.filter(job => job.company && job.company.trim());
+                        allJobs = results.data.filter(job => job.company && job.title);
+                        
                         if (allJobs.length === 0) {
                             document.getElementById('loadingState').innerHTML = 
-                                '❌ No valid jobs found in CSV. Check the file format.';
+                                '❌ No jobs found in CSV.';
                             return;
                         }
+                        
+                        allCompanies = [...new Set(allJobs.map(j => j.company))].sort();
+                        allLocations = [...new Set(allJobs.filter(j => j.location).map(j => j.location))].sort();
+                        allTitles = [...new Set(allJobs.map(j => j.title))].sort();
+                        
                         document.getElementById('loadingState').style.display = 'none';
-                        initializeFilters();
+                        
+                        renderCompanyList();
+                        renderLocationList();
+                        renderTitleList();
                         renderJobs();
-                    },
-                    error: (error) => {
-                        document.getElementById('loadingState').innerHTML = 
-                            '❌ Error parsing CSV: ' + error.message;
                     }
                 });
             } catch (error) {
                 document.getElementById('loadingState').innerHTML = 
-                    '❌ Could not load all_jobs.csv. Make sure the file is in the same folder as this HTML file.';
-                console.error('Error:', error);
+                    '❌ Could not load all_jobs.csv. Make sure it\'s in the same folder.';
             }
         }
 
-        // Initialize filter options
-        function initializeFilters() {
-            const companies = [...new Set(allJobs.map(j => j.company))].sort();
-            const locations = [...new Set(allJobs.filter(j => j.location).map(j => j.location))].sort();
-            const titles = [...new Set(allJobs.map(j => j.title))].sort();
-
-            renderFilterList('companyList', companies, 'companies');
-            renderFilterList('locationList', locations, 'locations');
-            renderFilterList('titleList', titles.slice(0, 15), 'titles');
-        }
-
-        // Render filter checkboxes
-        function renderFilterList(elementId, items, filterType) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = items.map((item, idx) => `
+        function renderCompanyList() {
+            const container = document.getElementById('companyList');
+            container.innerHTML = allCompanies.map((company, idx) => `
                 <div class="filter-item">
                     <input 
                         type="checkbox" 
-                        id="${filterType}-${idx}"
-                        class="filter-checkbox"
-                        data-filter-type="${filterType}"
-                        data-value="${item.replace(/'/g, "\\'")}"
-                        onchange="toggleFilter('${filterType}', '${item.replace(/'/g, "\\'")}', this.checked)"
+                        id="company-${idx}"
+                        onchange="toggleCompany('${company.replace(/'/g, "\\'")}')"
                     >
-                    <label for="${filterType}-${idx}">${item}</label>
+                    <label for="company-${idx}">${company}</label>
+                </div>
+            `).join('');
+        }
+
+        function renderLocationList() {
+            const container = document.getElementById('locationList');
+            container.innerHTML = allLocations.map((location, idx) => `
+                <div class="filter-item">
+                    <input 
+                        type="checkbox" 
+                        id="location-${idx}"
+                        onchange="toggleLocation('${location.replace(/'/g, "\\'")}')"
+                    >
+                    <label for="location-${idx}">${location}</label>
+                </div>
+            `).join('');
+        }
+
+        function renderTitleList() {
+            const container = document.getElementById('titleList');
+            const limitedTitles = allTitles.slice(0, 50);
+            container.innerHTML = limitedTitles.map((title, idx) => `
+                <div class="filter-item">
+                    <input 
+                        type="checkbox" 
+                        id="title-${idx}"
+                        onchange="toggleTitle('${title.replace(/'/g, "\\'")}')"
+                    >
+                    <label for="title-${idx}">${title}</label>
                 </div>
             `).join('');
             
-            // Add search functionality
-            const searchInput = document.getElementById(`${filterType}Search`);
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => filterOptions(elementId, e.target.value));
+            if (allTitles.length > 50) {
+                const container = document.getElementById('titleList');
+                container.innerHTML += `<p style="color: #64748b; font-size: 0.75rem; margin-top: 0.5rem;">+ ${allTitles.length - 50} more titles</p>`;
             }
         }
 
-        // Filter options based on search input
-        function filterOptions(elementId, searchTerm) {
-            const items = document.querySelectorAll(`#${elementId} .filter-item`);
+        function filterCompanies() {
+            const search = document.getElementById('companySearch').value.toLowerCase();
+            const items = document.querySelectorAll('#companyList .filter-item');
             items.forEach(item => {
                 const label = item.querySelector('label').textContent.toLowerCase();
-                if (label.includes(searchTerm.toLowerCase())) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
+                item.style.display = label.includes(search) ? 'flex' : 'none';
             });
         }
 
-        // Toggle filter
-        function toggleFilter(type, value, checked) {
-            if (checked) {
-                filters[type].add(value);
+        function filterLocations() {
+            const search = document.getElementById('locationSearch').value.toLowerCase();
+            const items = document.querySelectorAll('#locationList .filter-item');
+            items.forEach(item => {
+                const label = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = label.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        function filterTitles() {
+            const search = document.getElementById('titleSearch').value.toLowerCase();
+            const items = document.querySelectorAll('#titleList .filter-item');
+            items.forEach(item => {
+                const label = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = label.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        function toggleCompany(company) {
+            if (selectedCompanies.has(company)) {
+                selectedCompanies.delete(company);
             } else {
-                filters[type].delete(value);
+                selectedCompanies.add(company);
             }
             renderJobs();
         }
 
-        // Clear all filters
-        function clearFilters() {
-            filters = { companies: new Set(), locations: new Set(), titles: new Set() };
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.getElementById('searchInput').value = '';
+        function toggleLocation(location) {
+            if (selectedLocations.has(location)) {
+                selectedLocations.delete(location);
+            } else {
+                selectedLocations.add(location);
+            }
             renderJobs();
         }
 
-        // Filter and render jobs
+        function toggleTitle(title) {
+            if (selectedTitles.has(title)) {
+                selectedTitles.delete(title);
+            } else {
+                selectedTitles.add(title);
+            }
+            renderJobs();
+        }
+
+        function clearAllFilters() {
+            selectedCompanies.clear();
+            selectedLocations.clear();
+            selectedTitles.clear();
+            document.getElementById('mainSearch').value = '';
+            document.getElementById('companySearch').value = '';
+            document.getElementById('locationSearch').value = '';
+            document.getElementById('titleSearch').value = '';
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            renderCompanyList();
+            renderLocationList();
+            renderTitleList();
+            renderJobs();
+        }
+
         function renderJobs() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const mainSearch = document.getElementById('mainSearch').value.toLowerCase();
             
             const filtered = allJobs.filter(job => {
-                const matchCompany = filters.companies.size === 0 || filters.companies.has(job.company);
-                const matchLocation = filters.locations.size === 0 || filters.locations.has(job.location);
-                const matchTitle = filters.titles.size === 0 || filters.titles.has(job.title);
-                const matchSearch = !searchTerm || 
-                    job.title.toLowerCase().includes(searchTerm) ||
-                    job.company.toLowerCase().includes(searchTerm);
+                const matchCompany = selectedCompanies.size === 0 || selectedCompanies.has(job.company);
+                const matchLocation = selectedLocations.size === 0 || selectedLocations.has(job.location);
+                const matchTitle = selectedTitles.size === 0 || selectedTitles.has(job.title);
+                const matchSearch = !mainSearch || 
+                    job.title.toLowerCase().includes(mainSearch) ||
+                    job.company.toLowerCase().includes(mainSearch);
                 
                 return matchCompany && matchLocation && matchTitle && matchSearch;
             });
 
-            // Update stats
             document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
             document.getElementById('companyCount').textContent = new Set(filtered.map(j => j.company)).size;
             document.getElementById('locationCount').textContent = new Set(filtered.filter(j => j.location).map(j => j.location)).size;
 
-            // Render table
             const jobsBody = document.getElementById('jobsBody');
             const jobsTable = document.getElementById('jobsTable');
             const emptyState = document.getElementById('emptyState');
@@ -619,7 +647,7 @@
                         <td class="company-cell">${job.company}</td>
                         <td>${job.title}</td>
                         <td class="location-cell">${job.location || '—'}</td>
-                        <td class="link-cell"><button class="link-btn" onclick="window.open('${job.url}', '_blank')">Apply Now</button></td>
+                        <td><button class="link-btn" onclick="window.open('${job.url}', '_blank')">Apply</button></td>
                     </tr>
                 `).join('');
                 jobsTable.style.display = 'table';
@@ -627,10 +655,8 @@
             }
         }
 
-        // Search input listener
-        document.getElementById('searchInput').addEventListener('input', renderJobs);
+        document.getElementById('mainSearch').addEventListener('input', renderJobs);
 
-        // Load on page load
         loadCSV();
     </script>
 </body>
