@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Market Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #334155;
+            padding: 2rem;
+        }
+
+        .header-content {
+            max-width: 90rem;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 90rem;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper::before {
+            content: '🔍';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-header h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .clear-btn {
+            padding: 0.25rem 0.5rem;
+            background: #475569;
+            color: #cbd5e1;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            background: #64748b;
+        }
+
+        .filter-group {
+            margin-bottom: 2rem;
+        }
+
+        .filter-group h3 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-search-input {
+            width: 100%;
+            padding: 0.5rem;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 0.375rem;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .filter-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .filter-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .filter-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filter-list::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .filter-item input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .filter-item label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        .filter-item:hover label {
+            color: #cbd5e1;
+        }
+
+        .results-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .table-container {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #cbd5e1;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        tbody tr:hover {
+            background: rgba(71, 85, 105, 0.2);
+        }
+
+        .company-cell {
+            font-weight: 600;
+        }
+
+        .link-btn {
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .link-btn:hover {
+            background: #2563eb;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .loading {
+            padding: 2rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>💼 Job Market Dashboard</h1>
+            <p class="header-subtitle">5,484 jobs from Greenhouse + Sacramento career pages</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="search-wrapper">
+                <input
+                    type="text"
+                    id="mainSearch"
+                    class="search-input"
+                    placeholder="Search job titles or companies..."
+                >
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="sidebar">
+                <div class="filter-header">
+                    <h2>🎯 Filters</h2>
+                    <button class="clear-btn" onclick="clearAllFilters()">Clear</button>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Company</h3>
+                    <input type="text" class="filter-search-input" id="companySearch" placeholder="Search..." onkeyup="filterCompanies()">
+                    <div class="filter-list" id="companyList"></div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Location</h3>
+                    <input type="text" class="filter-search-input" id="locationSearch" placeholder="Search..." onkeyup="filterLocations()">
+                    <div class="filter-list" id="locationList"></div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Job Title</h3>
+                    <input type="text" class="filter-search-input" id="titleSearch" placeholder="Search..." onkeyup="filterTitles()">
+                    <div class="filter-list" id="titleList"></div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Results</div>
+                        <div class="stat-value" id="resultCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Companies</div>
+                        <div class="stat-value" id="companyCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Locations</div>
+                        <div class="stat-value" id="locationCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Jobs</div>
+                        <div class="stat-value" id="totalCount">0</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div id="loadingState" class="loading">Loading jobs...</div>
+                    <table id="jobsTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Job Title</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsBody"></tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state" style="display: none;">No jobs match your filters</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allJobs = [];
+        let selectedCompanies = new Set();
+        let selectedLocations = new Set();
+        let selectedTitles = new Set();
+
+        async function loadData() {
+            try {
+                const response = await fetch('all_jobs_combined.csv');
+                if (!response.ok) throw new Error('File not found');
+                
+                const csv = await response.text();
+                Papa.parse(csv, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        allJobs = results.data.filter(job => job.company && job.title);
+                        
+                        if (allJobs.length === 0) {
+                            document.getElementById('loadingState').textContent = 'No jobs found';
+                            return;
+                        }
+                        
+                        document.getElementById('loadingState').style.display = 'none';
+                        document.getElementById('totalCount').textContent = allJobs.length.toLocaleString();
+                        
+                        buildFilters();
+                        renderJobs();
+                    }
+                });
+            } catch (error) {
+                document.getElementById('loadingState').textContent = '❌ Could not load all_jobs_combined.csv';
+            }
+        }
+
+        function buildFilters() {
+            const companies = [...new Set(allJobs.map(j => j.company))].sort();
+            const locations = [...new Set(allJobs.filter(j => j.location).map(j => j.location))].sort();
+            const titles = [...new Set(allJobs.map(j => j.title))].sort();
+
+            document.getElementById('companyList').innerHTML = companies.map((c, i) => `
+                <div class="filter-item">
+                    <input type="checkbox" id="c${i}" onchange="renderJobs()">
+                    <label for="c${i}">${c}</label>
+                </div>
+            `).join('');
+
+            document.getElementById('locationList').innerHTML = locations.map((l, i) => `
+                <div class="filter-item">
+                    <input type="checkbox" id="l${i}" onchange="renderJobs()">
+                    <label for="l${i}">${l}</label>
+                </div>
+            `).join('');
+
+            document.getElementById('titleList').innerHTML = titles.slice(0, 50).map((t, i) => `
+                <div class="filter-item">
+                    <input type="checkbox" id="t${i}" onchange="renderJobs()">
+                    <label for="t${i}">${t}</label>
+                </div>
+            `).join('');
+        }
+
+        function filterCompanies() {
+            const search = document.getElementById('companySearch').value.toLowerCase();
+            document.querySelectorAll('#companyList .filter-item').forEach(item => {
+                const text = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        function filterLocations() {
+            const search = document.getElementById('locationSearch').value.toLowerCase();
+            document.querySelectorAll('#locationList .filter-item').forEach(item => {
+                const text = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        function filterTitles() {
+            const search = document.getElementById('titleSearch').value.toLowerCase();
+            document.querySelectorAll('#titleList .filter-item').forEach(item => {
+                const text = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        function clearAllFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('mainSearch').value = '';
+            document.getElementById('companySearch').value = '';
+            document.getElementById('locationSearch').value = '';
+            document.getElementById('titleSearch').value = '';
+            renderJobs();
+        }
+
+        function renderJobs() {
+            const search = document.getElementById('mainSearch').value.toLowerCase();
+            
+            const checkedCompanies = new Set([...document.querySelectorAll('#companyList input:checked')].map(cb => cb.nextElementSibling.textContent));
+            const checkedLocations = new Set([...document.querySelectorAll('#locationList input:checked')].map(cb => cb.nextElementSibling.textContent));
+            const checkedTitles = new Set([...document.querySelectorAll('#titleList input:checked')].map(cb => cb.nextElementSibling.textContent));
+
+            const filtered = allJobs.filter(job => {
+                const matchCompany = checkedCompanies.size === 0 || checkedCompanies.has(job.company);
+                const matchLocation = checkedLocations.size === 0 || checkedLocations.has(job.location);
+                const matchTitle = checkedTitles.size === 0 || checkedTitles.has(job.title);
+                const matchSearch = !search || job.title.toLowerCase().includes(search) || job.company.toLowerCase().includes(search);
+                
+                return matchCompany && matchLocation && matchTitle && matchSearch;
+            });
+
+            document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
+            document.getElementById('companyCount').textContent = new Set(filtered.map(j => j.company)).size;
+            document.getElementById('locationCount').textContent = new Set(filtered.map(j => j.location)).size;
+
+            const jobsBody = document.getElementById('jobsBody');
+            const jobsTable = document.getElementById('jobsTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filtered.length === 0) {
+                jobsTable.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                jobsBody.innerHTML = filtered.map(job => `
+                    <tr>
+                        <td class="company-cell">${job.company}</td>
+                        <td>${job.title}</td>
+                        <td>${job.location || '—'}</td>
+                        <td><button class="link-btn" onclick="window.open('${job.url}', '_blank')">Apply</button></td>
+                    </tr>
+                `).join('');
+                jobsTable.style.display = 'table';
+                emptyState.style.display = 'none';
+            }
+        }
+
+        document.getElementById('mainSearch').addEventListener('input', renderJobs);
+        loadData();
+    </script>
+</body>
+</html>
