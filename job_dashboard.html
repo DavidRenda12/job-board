@@ -378,7 +378,10 @@
                 </div>
 
                 <div class="filter-group">
-                    <h3>Company</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h3 style="margin: 0;">Company</h3>
+                        <button class="clear-btn" onclick="selectAllCompanies()" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">All</button>
+                    </div>
                     <input 
                         type="text" 
                         class="filter-search-input" 
@@ -390,7 +393,10 @@
                 </div>
 
                 <div class="filter-group">
-                    <h3>Location</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h3 style="margin: 0;">Location</h3>
+                        <button class="clear-btn" onclick="selectAllLocations()" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">All</button>
+                    </div>
                     <input 
                         type="text" 
                         class="filter-search-input" 
@@ -402,7 +408,10 @@
                 </div>
 
                 <div class="filter-group">
-                    <h3>Job Title</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h3 style="margin: 0;">Job Title</h3>
+                        <button class="clear-btn" onclick="selectAllTitles()" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">All</button>
+                    </div>
                     <input 
                         type="text" 
                         class="filter-search-input" 
@@ -570,6 +579,24 @@
                 const label = item.querySelector('label').textContent.toLowerCase();
                 item.style.display = label.includes(search) ? 'flex' : 'none';
             });
+        }
+
+        function selectAllCompanies() {
+            allCompanies.forEach(company => selectedCompanies.add(company));
+            document.querySelectorAll('#companyList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            renderJobs();
+        }
+
+        function selectAllLocations() {
+            allLocations.forEach(location => selectedLocations.add(location));
+            document.querySelectorAll('#locationList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            renderJobs();
+        }
+
+        function selectAllTitles() {
+            allTitles.forEach(title => selectedTitles.add(title));
+            document.querySelectorAll('#titleList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            renderJobs();
         }
 
         function toggleCompany(company) {
