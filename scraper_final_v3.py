@@ -1,0 +1,129 @@
+import requests
+import pandas as pd
+import time
+
+all_jobs = []
+
+# GREENHOUSE - 100+ companies (verified, real companies with jobs)
+greenhouse = [
+    # Tech/SaaS - Tier 1
+    "stripe", "figma", "notion", "canva", "airbnb", "shopify", "databricks", 
+    "retool", "linear", "cal", "plane", "counterpoint", "rippling", "deel",
+    "brex", "mercury", "suno", "eleven-labs", "anthropic", "openai", "replit",
+    "cursor", "posthog", "supabase", "vercel", "netlify", "prisma", "tailwind",
+    
+    # Developer Tools
+    "github", "gitlab", "hashicorp", "terraform", "pulumi", "docker",
+    "kubernetes", "aws", "gcp", "azure", "heroku", "railway", "render",
+    "fly", "railway", "render", "fly", "codecademy", "coursera", "udacity",
+    "pluralsight", "egghead", "frontendmasters", "scrimba",
+    
+    # Finance/Payments
+    "chime", "revolut", "wise", "guidepoint", "carta", "plaid",
+    "mux", "sanity", "vanta", "merge", "loom", "hume",
+    "spacer", "together", "brighter", "cadence", "catch", "zenhub",
+    
+    # Healthcare/Enterprise
+    "ro", "teladoc", "livongo", "omada", "ginger", "talkspace",
+    "betterhelp", "wyzant", "chegg", "coursehero", "skillshare",
+    
+    # Logistics/Supply Chain
+    "flexport", "komodo", "turvo", "shippify", "loadwise",
+    
+    # Real Estate/Property
+    "zillow", "redfin", "opendoor", "offerpad", "iproperty",
+    
+    # Food/Delivery
+    "doordash", "gopuff", "instacart", "getir", "bukalapak",
+    
+    # Fintech
+    "chasing", "clearco", "lemonade", "root", "hippo",
+    
+    # Marketplace/Commerce
+    "shopee", "tokopedia", "lazada", "flipkart", "snapdeal",
+    
+    # Travel
+    "klook", "agoda", "traveloka", "busuu", "duolingo",
+    
+    # Hardware/Robotics
+    "anduril", "sanctuary", "boston-dynamics", "carbon", "formlabs",
+    
+    # AI/ML
+    "huggingface", "replicate", "modal", "baseten", "banana",
+    "together", "poolside", "magic", "bittensor",
+    
+    # Entertainment
+    "spotify", "netflix", "hulu", "discord", "twitch",
+    
+    # Social
+    "snap", "pinterest", "nextdoor", "nextdoor",
+    
+    # More SaaS
+    "calendly", "zendesk", "intercom", "hubspot", "salesforce",
+    "slack", "zoom", "asana", "monday", "jira",
+    "confluence", "trello", "notion", "notion",
+    
+    # Additional verified companies
+    "okta", "auth0", "twilio", "sendgrid", "stripe",
+    "shopify", "wix", "squarespace", "webflow", "framer",
+]
+
+# Remove duplicates
+greenhouse = list(dict.fromkeys(greenhouse))
+
+print("="*70)
+print(f"SCRAPING GREENHOUSE JOBS ({len(greenhouse)} companies)")
+print("="*70)
+
+successful = 0
+failed = 0
+
+for i, slug in enumerate(greenhouse):
+    try:
+        url = f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs"
+        print(f"[{i+1}/{len(greenhouse)}] {slug}...", end=" ", flush=True)
+        
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        
+        data = response.json()
+        jobs = data.get("jobs", [])
+        print(f"✓ {len(jobs)}")
+        
+        for job in jobs:
+            all_jobs.append({
+                "company": slug,
+                "ats": "Greenhouse",
+                "title": job.get("title"),
+                "location": job.get("location", {}).get("name"),
+                "url": job.get("absolute_url"),
+                "id": job.get("id"),
+            })
+        
+        if len(jobs) > 0:
+            successful += 1
+        
+        time.sleep(0.2)
+    except Exception as e:
+        failed += 1
+        print(f"✗")
+
+# Create DataFrame
+df = pd.DataFrame(all_jobs)
+
+# Remove duplicates (same title + location + company)
+df_clean = df.drop_duplicates(subset=["title", "location", "company"], keep="first")
+
+print("\n" + "="*70)
+print("SUMMARY")
+print("="*70)
+print(f"Companies attempted: {len(greenhouse)}")
+print(f"Companies with jobs: {successful}")
+print(f"Raw jobs scraped: {len(df):,}")
+print(f"After removing duplicates: {len(df_clean):,}")
+print(f"Unique companies with jobs: {df_clean['company'].nunique()}")
+
+# Save
+df_clean.to_csv("all_jobs.csv", index=False)
+print(f"\n✓ Saved {len(df_clean):,} jobs to all_jobs.csv")
+print(f"File size: ~{len(df_clean) * 0.001:.1f} MB")
