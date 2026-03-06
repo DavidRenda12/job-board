@@ -362,12 +362,12 @@
                         <div class="stat-label">Results</div>
                         <div class="stat-value" id="resultCount">0</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Companies</div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="sortByCompany()">
+                        <div class="stat-label">Companies ↕️</div>
                         <div class="stat-value" id="companyCount">0</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Locations</div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="sortByLocation()">
+                        <div class="stat-label">Locations ↕️</div>
                         <div class="stat-value" id="locationCount">0</div>
                     </div>
                     <div class="stat-card">
@@ -557,6 +557,68 @@
                 }
             });
             renderJobs();
+        }
+        let sortState = {
+            company: 'asc',
+            location: 'asc',
+            title: 'asc'
+        };
+
+        function sortByCompany() {
+            const jobsBody = document.getElementById('jobsBody');
+            const rows = Array.from(jobsBody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const compA = a.cells[0].textContent.trim();
+                const compB = b.cells[0].textContent.trim();
+                
+                if (sortState.company === 'asc') {
+                    return compA.localeCompare(compB);
+                } else {
+                    return compB.localeCompare(compA);
+                }
+            });
+            
+            rows.forEach(row => jobsBody.appendChild(row));
+            sortState.company = sortState.company === 'asc' ? 'desc' : 'asc';
+        }
+
+        function sortByLocation() {
+            const jobsBody = document.getElementById('jobsBody');
+            const rows = Array.from(jobsBody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const locA = a.cells[2].textContent.trim();
+                const locB = b.cells[2].textContent.trim();
+                
+                if (sortState.location === 'asc') {
+                    return locA.localeCompare(locB);
+                } else {
+                    return locB.localeCompare(locA);
+                }
+            });
+            
+            rows.forEach(row => jobsBody.appendChild(row));
+            sortState.location = sortState.location === 'asc' ? 'desc' : 'asc';
+        }
+
+        function sortByTitle() {
+            const jobsBody = document.getElementById('jobsBody');
+            const rows = Array.from(jobsBody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const titleA = a.cells[1].textContent.trim();
+                const titleB = b.cells[1].textContent.trim();
+                
+                if (sortState.title === 'asc') {
+                    return titleA.localeCompare(titleB);
+                } else {
+                    return titleB.localeCompare(titleA);
+                }
+            });
+            
+            rows.forEach(row => jobsBody.appendChild(row));
+            sortState.title = sortState.title === 'asc' ? 'desc' : 'asc';
         }
         loadData();
     </script>
