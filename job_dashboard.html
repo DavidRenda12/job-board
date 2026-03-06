@@ -651,17 +651,15 @@
             rows.forEach(row => jobsBody.appendChild(row));
             sortState.title = sortState.title === 'asc' ? 'desc' : 'asc';
         }
-        function loadLastScraped() {
+        async function loadLastScraped() {
             try {
-                const response = await fetch('all_jobs.csv');
+                const response = await fetch('scrape_time.txt');
                 if (response.ok) {
-                    // Get the file's last modified time
-                    const lastModified = new Date(response.headers.get('last-modified'));
-                    const formatted = lastModified.toLocaleString();
-                    document.getElementById('lastScraped').textContent = formatted;
+                    const text = await response.text();
+                    document.getElementById('lastScraped').textContent = text.trim();
                 }
             } catch (e) {
-                document.getElementById('lastScraped').textContent = 'Unknown';
+                document.getElementById('lastScraped').textContent = 'Check back soon';
             }
         }
         loadData();
