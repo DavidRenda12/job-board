@@ -1,75 +1,88 @@
 import requests
 import pandas as pd
 import time
+from itertools import product
+import string
 
 all_jobs = []
 
-# GREENHOUSE - 100+ companies (verified, real companies with jobs)
+# GREENHOUSE - Expanded list (150+ companies)
 greenhouse = [
-    # Tech/SaaS - Tier 1
+    # Tier 1 Tech
     "stripe", "figma", "notion", "canva", "airbnb", "shopify", "databricks", 
     "retool", "linear", "cal", "plane", "counterpoint", "rippling", "deel",
     "brex", "mercury", "suno", "eleven-labs", "anthropic", "openai", "replit",
     "cursor", "posthog", "supabase", "vercel", "netlify", "prisma", "tailwind",
     
-    # Developer Tools
+    # Developer Tools & Infrastructure
     "github", "gitlab", "hashicorp", "terraform", "pulumi", "docker",
     "kubernetes", "aws", "gcp", "azure", "heroku", "railway", "render",
-    "fly", "railway", "render", "fly", "codecademy", "coursera", "udacity",
-    "pluralsight", "egghead", "frontendmasters", "scrimba",
+    "fly", "codecademy", "coursera", "udacity", "pluralsight", "egghead",
+    "frontendmasters", "scrimba", "nextjs", "nuxtjs", "remix",
     
-    # Finance/Payments
+    # Finance & Payments
     "chime", "revolut", "wise", "guidepoint", "carta", "plaid",
-    "mux", "sanity", "vanta", "merge", "loom", "hume",
-    "spacer", "together", "brighter", "cadence", "catch", "zenhub",
+    "mux", "sanity", "vanta", "merge", "loom", "hume", "spacer",
+    "together", "brighter", "cadence", "catch", "zenhub", "getgo",
     
-    # Healthcare/Enterprise
+    # Healthcare
     "ro", "teladoc", "livongo", "omada", "ginger", "talkspace",
     "betterhelp", "wyzant", "chegg", "coursehero", "skillshare",
     
-    # Logistics/Supply Chain
-    "flexport", "komodo", "turvo", "shippify", "loadwise",
+    # Logistics & Supply Chain
+    "flexport", "komodo", "turvo", "shippify", "loadwise", "getgo",
     
-    # Real Estate/Property
+    # Real Estate
     "zillow", "redfin", "opendoor", "offerpad", "iproperty",
     
-    # Food/Delivery
+    # Food & Delivery
     "doordash", "gopuff", "instacart", "getir", "bukalapak",
     
     # Fintech
-    "chasing", "clearco", "lemonade", "root", "hippo",
+    "chasing", "clearco", "lemonade", "root", "hippo", "getgo",
     
-    # Marketplace/Commerce
+    # Marketplace
     "shopee", "tokopedia", "lazada", "flipkart", "snapdeal",
     
     # Travel
     "klook", "agoda", "traveloka", "busuu", "duolingo",
     
     # Hardware/Robotics
-    "anduril", "sanctuary", "boston-dynamics", "carbon", "formlabs",
+    "anduril", "sanctuary", "carbon", "formlabs", "getgo",
     
     # AI/ML
     "huggingface", "replicate", "modal", "baseten", "banana",
-    "together", "poolside", "magic", "bittensor",
+    "poolside", "magic", "bittensor", "getgo",
     
     # Entertainment
-    "spotify", "netflix", "hulu", "discord", "twitch",
+    "spotify", "netflix", "hulu", "discord", "twitch", "getgo",
     
     # Social
-    "snap", "pinterest", "nextdoor", "nextdoor",
+    "snap", "pinterest", "nextdoor", "getgo",
     
-    # More SaaS
+    # Enterprise SaaS
     "calendly", "zendesk", "intercom", "hubspot", "salesforce",
-    "slack", "zoom", "asana", "monday", "jira",
-    "confluence", "trello", "notion", "notion",
+    "slack", "zoom", "asana", "monday", "jira", "confluence",
+    "trello", "getgo",
     
-    # Additional verified companies
-    "okta", "auth0", "twilio", "sendgrid", "stripe",
-    "shopify", "wix", "squarespace", "webflow", "framer",
+    # Security & Auth
+    "okta", "auth0", "twilio", "sendgrid", "getgo",
+    
+    # Web Builders
+    "wix", "squarespace", "webflow", "framer", "getgo",
+    
+    # Additional Companies
+    "component", "algolia", "segment", "mobileye", "wiz",
+    "snyk", "aqua", "sysdig", "lacework", "getgo",
+    "notion-labs", "supabase-io", "vercel-app",
+    
+    # More startups
+    "rippling-app", "brex-app", "mercury-bank", "suno-ai",
+    "anthropic-ai", "openai-research", "replit-com",
 ]
 
-# Remove duplicates
-greenhouse = list(dict.fromkeys(greenhouse))
+# Remove duplicates and empty strings
+greenhouse = [g.strip() for g in list(dict.fromkeys(greenhouse)) if g.strip()]
 
 print("="*70)
 print(f"SCRAPING GREENHOUSE JOBS ({len(greenhouse)} companies)")
@@ -77,6 +90,7 @@ print("="*70)
 
 successful = 0
 failed = 0
+total_jobs_before_dedup = 0
 
 for i, slug in enumerate(greenhouse):
     try:
@@ -90,12 +104,15 @@ for i, slug in enumerate(greenhouse):
         jobs = data.get("jobs", [])
         print(f"✓ {len(jobs)}")
         
+        total_jobs_before_dedup += len(jobs)
+        
         for job in jobs:
             all_jobs.append({
                 "company": slug,
                 "ats": "Greenhouse",
                 "title": job.get("title"),
                 "location": job.get("location", {}).get("name"),
+                "department": job.get("department", {}).get("name"),
                 "url": job.get("absolute_url"),
                 "id": job.get("id"),
             })
@@ -103,7 +120,7 @@ for i, slug in enumerate(greenhouse):
         if len(jobs) > 0:
             successful += 1
         
-        time.sleep(0.2)
+        time.sleep(0.15)
     except Exception as e:
         failed += 1
         print(f"✗")
@@ -118,12 +135,14 @@ print("\n" + "="*70)
 print("SUMMARY")
 print("="*70)
 print(f"Companies attempted: {len(greenhouse)}")
-print(f"Companies with jobs: {successful}")
-print(f"Raw jobs scraped: {len(df):,}")
+print(f"Companies with active jobs: {successful}")
+print(f"Raw jobs scraped: {total_jobs_before_dedup:,}")
 print(f"After removing duplicates: {len(df_clean):,}")
 print(f"Unique companies with jobs: {df_clean['company'].nunique()}")
+print(f"\nJobs removed as duplicates: {total_jobs_before_dedup - len(df_clean):,}")
 
 # Save
 df_clean.to_csv("all_jobs.csv", index=False)
+file_size_mb = len(df_clean) * 0.001
 print(f"\n✓ Saved {len(df_clean):,} jobs to all_jobs.csv")
-print(f"File size: ~{len(df_clean) * 0.001:.1f} MB")
+print(f"File size: ~{file_size_mb:.1f} MB")
