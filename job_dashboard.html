@@ -582,20 +582,47 @@
         }
 
         function selectAllCompanies() {
-            allCompanies.forEach(company => selectedCompanies.add(company));
-            document.querySelectorAll('#companyList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            const search = document.getElementById('companySearch').value.toLowerCase();
+            allCompanies.forEach(company => {
+                if (company.toLowerCase().includes(search)) {
+                    selectedCompanies.add(company);
+                }
+            });
+            document.querySelectorAll('#companyList .filter-item').forEach(item => {
+                if (item.style.display !== 'none') {
+                    item.querySelector('input[type="checkbox"]').checked = true;
+                }
+            });
             renderJobs();
         }
 
         function selectAllLocations() {
-            allLocations.forEach(location => selectedLocations.add(location));
-            document.querySelectorAll('#locationList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            const search = document.getElementById('locationSearch').value.toLowerCase();
+            allLocations.forEach(location => {
+                if (location.toLowerCase().includes(search)) {
+                    selectedLocations.add(location);
+                }
+            });
+            document.querySelectorAll('#locationList .filter-item').forEach(item => {
+                if (item.style.display !== 'none') {
+                    item.querySelector('input[type="checkbox"]').checked = true;
+                }
+            });
             renderJobs();
         }
 
         function selectAllTitles() {
-            allTitles.forEach(title => selectedTitles.add(title));
-            document.querySelectorAll('#titleList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            const search = document.getElementById('titleSearch').value.toLowerCase();
+            allTitles.forEach(title => {
+                if (title.toLowerCase().includes(search)) {
+                    selectedTitles.add(title);
+                }
+            });
+            document.querySelectorAll('#titleList .filter-item').forEach(item => {
+                if (item.style.display !== 'none') {
+                    item.querySelector('input[type="checkbox"]').checked = true;
+                }
+            });
             renderJobs();
         }
 
