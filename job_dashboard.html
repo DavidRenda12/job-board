@@ -329,19 +329,28 @@
                 </div>
 
                 <div class="filter-group">
-                    <h3>Company</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="margin: 0;">Company</h3>
+                        <button class="clear-btn" onclick="selectAllCompanies()" style="font-size: 0.7rem;">All</button>
+                    </div>
                     <input type="text" class="filter-search-input" id="companySearch" placeholder="Search..." onkeyup="filterCompanies()">
                     <div class="filter-list" id="companyList"></div>
                 </div>
 
                 <div class="filter-group">
-                    <h3>Location</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="margin: 0;">Location</h3>
+                        <button class="clear-btn" onclick="selectAllLocations()" style="font-size: 0.7rem;">All</button>
+                    </div>
                     <input type="text" class="filter-search-input" id="locationSearch" placeholder="Search..." onkeyup="filterLocations()">
                     <div class="filter-list" id="locationList"></div>
                 </div>
 
                 <div class="filter-group">
-                    <h3>Job Title</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="margin: 0;">Job Title</h3>
+                        <button class="clear-btn" onclick="selectAllTitles()" style="font-size: 0.7rem;">All</button>
+                    </div>
                     <input type="text" class="filter-search-input" id="titleSearch" placeholder="Search..." onkeyup="filterTitles()">
                     <div class="filter-list" id="titleList"></div>
                 </div>
@@ -520,6 +529,35 @@
         }
 
         document.getElementById('mainSearch').addEventListener('input', renderJobs);
+        function selectAllCompanies() {
+            const search = document.getElementById('companySearch').value.toLowerCase();
+            document.querySelectorAll('#companyList .filter-item').forEach(item => {
+                if (item.style.display !== 'none') {
+                    item.querySelector('input[type="checkbox"]').checked = true;
+                }
+            });
+            renderJobs();
+        }
+
+        function selectAllLocations() {
+            const search = document.getElementById('locationSearch').value.toLowerCase();
+            document.querySelectorAll('#locationList .filter-item').forEach(item => {
+                if (item.style.display !== 'none') {
+                    item.querySelector('input[type="checkbox"]').checked = true;
+                }
+            });
+            renderJobs();
+        }
+
+        function selectAllTitles() {
+            const search = document.getElementById('titleSearch').value.toLowerCase();
+            document.querySelectorAll('#titleList .filter-item').forEach(item => {
+                if (item.style.display !== 'none') {
+                    item.querySelector('input[type="checkbox"]').checked = true;
+                }
+            });
+            renderJobs();
+        }
         loadData();
     </script>
 </body>
