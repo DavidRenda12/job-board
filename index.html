@@ -399,6 +399,54 @@
             color: #94a3b8;
         }
 
+        /* Relevance score badges */
+        .score-badge {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            min-width: 2.2rem;
+            text-align: center;
+        }
+        .score-excellent { background: rgba(34,197,94,0.18); color: #4ade80; border: 1px solid rgba(34,197,94,0.35); }
+        .score-strong    { background: rgba(59,130,246,0.18); color: #60a5fa; border: 1px solid rgba(59,130,246,0.35); }
+        .score-good      { background: rgba(234,179,8,0.18);  color: #facc15; border: 1px solid rgba(234,179,8,0.35); }
+        .score-weak      { background: rgba(249,115,22,0.18); color: #fb923c; border: 1px solid rgba(249,115,22,0.35); }
+        .score-low       { background: rgba(100,116,139,0.18);color: #94a3b8; border: 1px solid rgba(100,116,139,0.35); }
+
+        /* Top matches toggle button */
+        .top-match-btn {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(34,197,94,0.4);
+            background: rgba(34,197,94,0.1);
+            color: #4ade80;
+            text-align: left;
+        }
+        .top-match-btn.active {
+            background: rgba(34,197,94,0.25);
+            border-color: #4ade80;
+        }
+        .top-match-btn:hover {
+            background: rgba(34,197,94,0.2);
+        }
+
+        /* Sortable column headers */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+        th.sortable:hover {
+            color: #e2e8f0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -423,6 +471,12 @@
                 </div>
 
                 <div class="filter-group">
+                    <button class="top-match-btn" id="topMatchBtn" onclick="toggleTopMatches()">
+                        ★ Top Matches Only
+                    </button>
+                </div>
+
+                <div class="filter-group">
                     <div class="filter-group-header">
                         <h3>Job Title</h3>
                     </div>
@@ -439,21 +493,17 @@
 
             <div class="results-section">
                 <div class="stats-grid">
-                    <div class="stat-card" style="cursor: pointer;" onclick="sortByCompany()">
-                        <div class="stat-label">Companies ↕️</div>
-                        <div class="stat-value" id="companyCount">0</div>
-                    </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="sortByLocation()">
-                        <div class="stat-label">Locations ↕️</div>
-                        <div class="stat-value" id="locationCount">0</div>
-                    </div>
-                    <div class="stat-card" style="cursor: pointer;" onclick="sortByTitle()">
-                        <div class="stat-label">Job Titles ↕️</div>
-                        <div class="stat-value" id="titleCount">0</div>
-                    </div>
                     <div class="stat-card">
                         <div class="stat-label">Results</div>
                         <div class="stat-value" id="resultCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" style="color: #4ade80;">Top Matches</div>
+                        <div class="stat-value" id="topMatchCount" style="color: #4ade80;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Companies</div>
+                        <div class="stat-value" id="companyCount">0</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last Scraped</div>
@@ -466,9 +516,10 @@
                     <table id="jobsTable" style="display: none;">
                         <thead>
                             <tr>
-                                <th class="company-header">Company</th>
-                                <th>Job Title</th>
-                                <th>Location</th>
+                                <th class="sortable" onclick="sortByCol('score')">Match ↕</th>
+                                <th class="company-header sortable" onclick="sortByCol('company')">Company ↕</th>
+                                <th class="sortable" onclick="sortByCol('title')">Job Title ↕</th>
+                                <th class="sortable" onclick="sortByCol('location')">Location ↕</th>
                                 <th>Applied</th>
                                 <th>Action</th>
                             </tr>
@@ -483,32 +534,45 @@
 
     <script>
         let allJobs = [];
-        let sortState = {
-            company: 'asc',
-            location: 'asc',
-            title: 'asc'
-        };
+        let showTopMatchesOnly = false;
+        let currentSortCol = 'score';
+        let currentSortDir = 'desc';
 
+        // ----------------------------------------------------------------
+        // Score badge helper
+        // ----------------------------------------------------------------
+        function scoreBadge(score) {
+            const s = parseInt(score) || 0;
+            let cls, label;
+            if (s >= 90)      { cls = 'score-excellent'; label = s; }
+            else if (s >= 70) { cls = 'score-strong';    label = s; }
+            else if (s >= 50) { cls = 'score-good';      label = s; }
+            else if (s >= 25) { cls = 'score-weak';      label = s; }
+            else              { cls = 'score-low';        label = s; }
+            return `<span class="score-badge ${cls}">${label}</span>`;
+        }
+
+        // ----------------------------------------------------------------
+        // Data loading
+        // ----------------------------------------------------------------
         async function loadData() {
             try {
                 const response = await fetch('all_jobs_combined.csv');
                 if (!response.ok) throw new Error('File not found');
-                
+
                 const csv = await response.text();
                 Papa.parse(csv, {
                     header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
                         allJobs = results.data.filter(job => job.company && job.title);
-                        
+
                         if (allJobs.length === 0) {
                             document.getElementById('loadingState').textContent = 'No jobs found';
                             return;
                         }
-                        
+
                         document.getElementById('loadingState').style.display = 'none';
-                        
-                        buildFilters();
                         renderJobs();
                     }
                 });
@@ -529,97 +593,60 @@
             }
         }
 
-        function buildFilters() {
-            // No longer needed - we're using search inputs instead
-        }
-
-        function filterCompanies() {
-            // Removed - no longer needed
-        }
-
-        function filterLocations() {
-            // Removed - search is real-time in renderJobs
-        }
-
-        function filterTitles() {
-            // Removed - search is real-time in renderJobs
-        }
-
-        function selectAllCompanies() {
-            // Removed - no longer needed
-        }
-
-        function selectAllLocations() {
-            // Removed - no longer needed
-        }
-
-        function selectAllTitles() {
-            // Removed - no longer needed
+        // ----------------------------------------------------------------
+        // Filters & controls
+        // ----------------------------------------------------------------
+        function toggleTopMatches() {
+            showTopMatchesOnly = !showTopMatchesOnly;
+            const btn = document.getElementById('topMatchBtn');
+            btn.classList.toggle('active', showTopMatchesOnly);
+            btn.textContent = showTopMatchesOnly ? '★ Top Matches Only  ✓' : '★ Top Matches Only';
+            renderJobs();
         }
 
         function clearAllFilters() {
             document.getElementById('titleSearch').value = '';
             document.getElementById('locationSearch').value = '';
+            showTopMatchesOnly = false;
+            document.getElementById('topMatchBtn').classList.remove('active');
+            document.getElementById('topMatchBtn').textContent = '★ Top Matches Only';
+            currentSortCol = 'score';
+            currentSortDir = 'desc';
             renderJobs();
         }
 
-        function sortByCompany() {
-            const jobsBody = document.getElementById('jobsBody');
-            const rows = Array.from(jobsBody.querySelectorAll('tr'));
-            
-            rows.sort((a, b) => {
-                const compA = a.cells[0].textContent.trim();
-                const compB = b.cells[0].textContent.trim();
-                
-                if (sortState.company === 'asc') {
-                    return compA.localeCompare(compB);
-                } else {
-                    return compB.localeCompare(compA);
-                }
-            });
-            
-            rows.forEach(row => jobsBody.appendChild(row));
-            sortState.company = sortState.company === 'asc' ? 'desc' : 'asc';
+        // ----------------------------------------------------------------
+        // Sorting
+        // ----------------------------------------------------------------
+        function sortByCol(col) {
+            if (currentSortCol === col) {
+                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortCol = col;
+                currentSortDir = col === 'score' ? 'desc' : 'asc';
+            }
+            renderJobs();
         }
 
-        function sortByLocation() {
-            const jobsBody = document.getElementById('jobsBody');
-            const rows = Array.from(jobsBody.querySelectorAll('tr'));
-            
-            rows.sort((a, b) => {
-                const locA = a.cells[2].textContent.trim();
-                const locB = b.cells[2].textContent.trim();
-                
-                if (sortState.location === 'asc') {
-                    return locA.localeCompare(locB);
+        function sortJobs(jobs) {
+            return [...jobs].sort((a, b) => {
+                let valA, valB;
+                if (currentSortCol === 'score') {
+                    valA = parseInt(a.relevance_score) || 0;
+                    valB = parseInt(b.relevance_score) || 0;
+                    return currentSortDir === 'desc' ? valB - valA : valA - valB;
                 } else {
-                    return locB.localeCompare(locA);
+                    valA = (a[currentSortCol] || '').toLowerCase();
+                    valB = (b[currentSortCol] || '').toLowerCase();
+                    const cmp = valA.localeCompare(valB);
+                    return currentSortDir === 'asc' ? cmp : -cmp;
                 }
             });
-            
-            rows.forEach(row => jobsBody.appendChild(row));
-            sortState.location = sortState.location === 'asc' ? 'desc' : 'asc';
         }
 
-        function sortByTitle() {
-            const jobsBody = document.getElementById('jobsBody');
-            const rows = Array.from(jobsBody.querySelectorAll('tr'));
-            
-            rows.sort((a, b) => {
-                const titleA = a.cells[1].textContent.trim();
-                const titleB = b.cells[1].textContent.trim();
-                
-                if (sortState.title === 'asc') {
-                    return titleA.localeCompare(titleB);
-                } else {
-                    return titleB.localeCompare(titleA);
-                }
-            });
-            
-            rows.forEach(row => jobsBody.appendChild(row));
-            sortState.title = sortState.title === 'asc' ? 'desc' : 'asc';
-        }
-
+        // ----------------------------------------------------------------
+        // Applied tracking
+        // ----------------------------------------------------------------
         function applyAndMark(jobUrl, jobId) {
             toggleApplied(jobId, true);
             window.open(jobUrl, '_blank');
@@ -627,36 +654,38 @@
 
         function toggleApplied(jobId, isApplied) {
             let appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
-            
             if (isApplied) {
-                if (!appliedJobs.includes(jobId)) {
-                    appliedJobs.push(jobId);
-                }
+                if (!appliedJobs.includes(jobId)) appliedJobs.push(jobId);
             } else {
                 appliedJobs = appliedJobs.filter(id => id !== jobId);
             }
-            
             localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
             renderJobs();
         }
 
+        // ----------------------------------------------------------------
+        // Render
+        // ----------------------------------------------------------------
         function renderJobs() {
-            const titleSearch = document.getElementById('titleSearch').value.toLowerCase();
+            const titleSearch    = document.getElementById('titleSearch').value.toLowerCase();
             const locationSearch = document.getElementById('locationSearch').value.toLowerCase();
 
-            const filtered = allJobs.filter(job => {
-                const matchTitle = !titleSearch || job.title.toLowerCase().includes(titleSearch);
+            let filtered = allJobs.filter(job => {
+                const matchTitle    = !titleSearch    || job.title.toLowerCase().includes(titleSearch);
                 const matchLocation = !locationSearch || (job.location && job.location.toLowerCase().includes(locationSearch));
-                
-                return matchTitle && matchLocation;
+                const matchTop      = !showTopMatchesOnly || (parseInt(job.relevance_score) || 0) >= 70;
+                return matchTitle && matchLocation && matchTop;
             });
 
-            document.getElementById('resultCount').textContent = filtered.length.toLocaleString();
-            document.getElementById('companyCount').textContent = new Set(filtered.map(j => j.company)).size;
-            document.getElementById('locationCount').textContent = new Set(filtered.map(j => j.location)).size;
-            document.getElementById('titleCount').textContent = new Set(filtered.map(j => j.title)).size;
+            const topMatchCount = filtered.filter(j => (parseInt(j.relevance_score) || 0) >= 70).length;
 
-            const jobsBody = document.getElementById('jobsBody');
+            filtered = sortJobs(filtered);
+
+            document.getElementById('resultCount').textContent   = filtered.length.toLocaleString();
+            document.getElementById('topMatchCount').textContent = topMatchCount.toLocaleString();
+            document.getElementById('companyCount').textContent  = new Set(filtered.map(j => j.company)).size;
+
+            const jobsBody  = document.getElementById('jobsBody');
             const jobsTable = document.getElementById('jobsTable');
             const emptyState = document.getElementById('emptyState');
 
@@ -664,20 +693,20 @@
                 jobsTable.style.display = 'none';
                 emptyState.style.display = 'block';
             } else {
+                const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
                 jobsBody.innerHTML = filtered.map((job, idx) => {
-                    const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs')) || [];
                     const isApplied = appliedJobs.includes(job.id);
                     const checkboxId = `applied-${idx}`;
-                    
+                    const score = parseInt(job.relevance_score) || 0;
                     return `
-                    <tr style="opacity: ${isApplied ? '0.6' : '1'};">
+                    <tr style="opacity: ${isApplied ? '0.5' : '1'};">
+                        <td style="text-align:center;">${scoreBadge(score)}</td>
                         <td class="company-cell">${job.company}</td>
                         <td>${job.title}</td>
                         <td>${job.location || '—'}</td>
                         <td><input type="checkbox" id="${checkboxId}" ${isApplied ? 'checked' : ''} onchange="toggleApplied('${job.id}', this.checked)"></td>
                         <td><button class="link-btn" onclick="applyAndMark('${job.url}', '${job.id}')">Apply</button></td>
-                    </tr>
-                `;
+                    </tr>`;
                 }).join('');
                 jobsTable.style.display = 'table';
                 emptyState.style.display = 'none';
